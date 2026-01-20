@@ -1,0 +1,27 @@
+#include "stm32f4xx.h"
+
+// --- Global Variables ---
+int count = 0;         
+int is_running = 0; 
+
+void GPIO_Init(void);
+void Display_Value(int val);
+void Delay_ms(int ms);
+
+int main(void) {
+    GPIO_Init();
+    
+    while (1) {
+        Display_Value(count); // Update 7-segment displays
+
+        if (!is_running) {
+            // --- Input: SET TIME (SW3 on PB0) ---
+            // Check if PB0 is LOW (pressed)
+            if (!(GPIOB->IDR & (1 << 0))) { 
+                count++;
+                if (count > 99) count = 0; 
+                
+                // Visual feedback: blink display briefly
+                GPIOC->ODR = 0; 
+                Delay_ms(150); 
+            }
